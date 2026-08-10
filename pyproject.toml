@@ -1,0 +1,4 @@
+[tool.vercel]
+# Vercel Python runtime: api/diagnose.py의 BaseHTTPRequestHandler 진입점
+# 자동 탐색에 의존하지 않고 명시적으로 연결한다.
+entrypoint = "api.diagnose:handler"
