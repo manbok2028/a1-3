@@ -1,0 +1,2 @@
+# Third-party dependency is not required.
+# api/diagnose.py uses Python's standard-library urllib for the OpenAI HTTPS request.
