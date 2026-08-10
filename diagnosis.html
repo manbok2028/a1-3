@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="체납 상황 AI 정보 정리" /><title>AI 상황 정리 | 체납리셋</title><link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header class="site-header"><a class="brand" href="index.html" aria-label="체납리셋 홈">체납<span>리셋</span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">메뉴</button><nav id="site-nav" class="site-nav" aria-label="주요 메뉴"><a href="index.html">홈</a><a class="active" href="diagnosis.html">AI 상황 정리</a><a href="guide.html">제도 안내</a><a href="connect.html">세무사 연결</a><a href="contact.html">FAQ·문의</a><button class="theme-toggle" type="button" aria-label="색상 테마 변경">◐</button></nav></header>
+    <main id="main" class="page-shell">
+      <section class="page-intro"><p class="eyebrow">AI SITUATION ORGANIZER</p><h1>내 상황을 입력하고<br />다음 행동을 정리해 보세요.</h1><p>입력값을 바탕으로 제도 검토의 출발점과 전문가 상담에 필요한 분야 태그를 제시합니다.</p></section>
+      <div class="diagnosis-layout">
+        <section class="form-card" aria-labelledby="form-title">
+          <h2 id="form-title">체납 상황 입력</h2><p class="form-note">별표(*) 항목은 필수입니다. 주민번호·계좌번호·정확한 주소는 입력하지 마세요.</p>
+          <form id="diagnosis-form" novalidate>
+            <div class="field-row"><label for="tax-type">세목 구분 <em>*</em></label><select id="tax-type" name="taxType" required><option value="">선택하세요</option><option value="국세">국세</option><option value="지방세">지방세</option><option value="국세와 지방세 모두">국세와 지방세 모두</option></select></div>
+            <div class="field-row"><label for="amount">대략적인 체납액 <em>*</em></label><div class="input-suffix"><input id="amount" name="amount" inputmode="numeric" type="number" min="1" placeholder="예: 3000000" required /><span>원</span></div><small>정확한 고지액이 아니라 대략적인 범위여도 됩니다.</small></div>
+            <div class="field-row"><label for="period">체납 기간 <em>*</em></label><select id="period" name="period" required><option value="">선택하세요</option><option value="3개월 미만">3개월 미만</option><option value="3개월~1년">3개월~1년</option><option value="1년~3년">1년~3년</option><option value="3년 이상">3년 이상</option></select></div>
+            <div class="field-row"><label for="situation">현재 상황 <em>*</em></label><select id="situation" name="situation" required><option value="">선택하세요</option><option value="매출 감소 또는 소득 감소">매출 감소 또는 소득 감소</option><option value="폐업 또는 사업 중단">폐업 또는 사업 중단</option><option value="질병·재해 등 긴급 사정">질병·재해 등 긴급 사정</option><option value="일시적 자금 부족">일시적 자금 부족</option><option value="기타 상황">기타 상황</option></select></div>
+            <div class="field-row"><label for="details">추가로 알리고 싶은 상황 <span>(선택)</span></label><textarea id="details" name="details" rows="4" maxlength="300" placeholder="예: 현재 폐업 상태이고 소득이 거의 없습니다."></textarea><small><span id="char-count">0</span>/300자 · 개인식별정보는 입력하지 마세요.</small></div>
+            <p id="form-message" class="form-message" role="alert" aria-live="polite"></p><button class="button primary wide" type="submit">AI로 다음 행동 정리하기 <span>→</span></button>
+          </form>
+        </section>
+        <section class="result-panel" aria-live="polite" aria-labelledby="result-title"><div class="result-empty" id="result-empty"><span class="result-mark">✦</span><h2 id="result-title">입력 후 결과가 여기에 표시됩니다</h2><p>상황 요약, 확인해 볼 제도, 행동 체크리스트, 세무사 상담 분야 태그를 한 번에 확인할 수 있습니다.</p></div><div id="result-content" hidden></div></section>
+      </div>
+    </main>
+    <footer class="site-footer"><p>© <span data-year></span> 체납리셋 · 학습용 웹 서비스</p><p>세무·법률 자문 또는 세무대리·알선 서비스가 아닙니다.</p></footer><div class="legal-banner" role="note">AI 결과는 참고용 정보 정리입니다. 실제 제도 적용·처분 유예 여부는 관할 세무서 또는 지방자치단체와 반드시 확인하세요.</div>
+    <script src="js/main.js"></script><script src="js/diagnosis.js"></script>
+  </body>
+</html>
