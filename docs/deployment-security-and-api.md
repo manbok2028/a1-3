@@ -10,16 +10,29 @@
 | 배포 플랫폼 | Vercel |
 | Framework Preset | `Other` (바닐라 HTML/CSS/JavaScript + Python Serverless Function) |
 | API 경로 | `POST /api/diagnose` |
-| 공개 URL | Vercel 배포를 완료한 뒤 README와 이 문서에 **실제 URL**을 기록한다. |
+| 공개 URL | https://a1-3-eta.vercel.app |
 | 배포 전 확인 | `python -m unittest discover -s tests -v` 성공, 데모 모드 UI 정상 동작 |
 
-공개 URL은 인증된 Vercel 계정에서 배포한 결과만 기록한다. 아직 배포하지 않은 주소를 예시 URL처럼 적어 제출하지 않는다.
+공개 URL은 인증된 Vercel 계정에서 배포한 결과만 기록한다. 이 프로젝트는 `main` 브랜치의 실제 Vercel Production 배포가 `Ready` 상태인 것을 확인했으며, 임의의 예시 URL을 사용하지 않는다.
 
 1. Vercel Dashboard에서 **Add New → Project**를 누르고 `manbok2028/a1-3`을 Import한다.
 2. Framework Preset은 `Other`, Root Directory는 저장소 최상위로 둔다.
 3. **Settings → Environment Variables**에 `OPENAI_API_KEY`와 선택 변수들을 등록한다.
 4. Deploy 뒤 생성된 실제 URL에서 `/diagnosis.html`을 열어 정상 입력, 빈 입력, 모바일 폭(375px)을 확인한다.
 5. 실제 URL을 README와 이 문서의 `공개 URL` 칸에 같은 값으로 기록한다.
+
+### 실제 배포·검증 기록
+
+| 검증 항목 | 결과 |
+|---|---|
+| Production URL | https://a1-3-eta.vercel.app |
+| 배포 소스 | `main` · `ffc5ec3 fix: preserve static pages on Vercel` |
+| Vercel 상태 | `Ready` |
+| 환경 변수 | `TAX_RESET_DEMO_MODE=true`를 Production·Preview에 설정. 실제 API 키는 배포하지 않음. |
+| 페이지 확인 | `GET /diagnosis.html` → HTTP `200`, `diagnosis-form` 존재 확인 |
+| AI 흐름 확인 | `POST /api/diagnose` → `demo: true`, 상황 요약과 매칭 태그 반환 |
+
+배포 중 Python 프레임워크 자동 감지 때문에 정적 HTML 요청이 함수로 잘못 전달된 문제를 발견했다. `vercel.json`의 `"framework": null`로 Framework Preset을 **Other**로 명시해 정적 HTML/CSS/JS는 그대로 제공하고 `api/diagnose.py`만 Vercel Function으로 처리하도록 수정했다.
 
 ### 배포 문제 진단·재배포
 
