@@ -38,11 +38,23 @@ tax-reset/
 
 ## 로컬 실행과 테스트
 
-정적 페이지는 VS Code Live Server 등으로 열 수 있습니다. Vercel API까지 함께 확인하려면 Vercel CLI에서 아래처럼 실행합니다.
+정적 페이지는 VS Code Live Server 등으로 열 수 있습니다. Python API까지 함께 확인하는 가장 간단한 로컬 미리보기는 아래와 같습니다.
 
 ```powershell
 Copy-Item .env.example .env.local
+$env:TAX_RESET_DEMO_MODE="true"
+python scripts/local_preview.py
+```
+
+실제 Vercel 실행 환경과 함께 확인하려면 Vercel CLI를 사용할 수도 있습니다.
+
+```powershell
 npx vercel dev
+```
+
+별도 터미널에서 단위 테스트를 실행합니다.
+
+```powershell
 python -m unittest discover -s tests -v
 ```
 
