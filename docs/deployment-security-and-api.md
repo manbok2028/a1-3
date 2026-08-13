@@ -17,7 +17,7 @@
 
 1. Vercel Dashboard에서 **Add New → Project**를 누르고 `manbok2028/a1-3`을 Import한다.
 2. Framework Preset은 `Other`, Root Directory는 저장소 최상위로 둔다.
-3. **Settings → Environment Variables**에 `OPENAI_API_KEY`와 선택 변수들을 등록한다.
+3. **Settings → Environment Variables**에 `GEMINI_API_KEY`와 선택 변수 `GEMINI_MODEL`을 등록하고, `TAX_RESET_DEMO_MODE`는 삭제하거나 `false`로 설정한다.
 4. Deploy 뒤 생성된 실제 URL에서 `/diagnosis.html`을 열어 정상 입력, 빈 입력, 모바일 폭(375px)을 확인한다.
 5. 실제 URL을 README와 이 문서의 `공개 URL` 칸에 같은 값으로 기록한다.
 
@@ -28,7 +28,7 @@
 | Production URL | https://a1-3-eta.vercel.app |
 | 배포 소스 | `main` · `ffc5ec3 fix: preserve static pages on Vercel` |
 | Vercel 상태 | `Ready` |
-| 환경 변수 | `TAX_RESET_DEMO_MODE=true`를 Production·Preview에 설정. 실제 API 키는 배포하지 않음. |
+| 환경 변수 | 실제 배포에는 `GEMINI_API_KEY`를 Production·Preview에 설정하고, `TAX_RESET_DEMO_MODE`는 삭제하거나 `false`로 설정한다. |
 | 페이지 확인 | `GET /diagnosis.html` → HTTP `200`, `diagnosis-form` 존재 확인 |
 | AI 흐름 확인 | `POST /api/diagnose` → `demo: true`, 상황 요약과 매칭 태그 반환 |
 
@@ -40,7 +40,7 @@
 |---|---|---|
 | 빌드 실패 | Vercel Project → Deployments → 실패 배포 → Build Logs | 오류 파일·줄을 수정하고 Git push한다. |
 | API 404 | Deployments의 Functions 목록, `api/diagnose.py` 경로 | `api/` 폴더와 파일명을 확인한 뒤 Redeploy한다. |
-| API 401/503 | Settings → Environment Variables, Function Logs | `OPENAI_API_KEY` 이름과 값을 재확인하고 재배포한다. |
+| API 401/503 | Settings → Environment Variables, Function Logs | `GEMINI_API_KEY` 이름과 값을 재확인하고 재배포한다. |
 | 응답 지연 | 브라우저 Network, Function Logs | 프론트의 15초 제한 안내를 확인하고 재시도한다. |
 | 스타일 누락 | 브라우저 Console/Network | CSS·JS 상대 경로와 200 응답을 확인한 뒤 재배포한다. |
 
@@ -50,8 +50,8 @@
 
 | 변수 | 쓰는 위치 | 공개 여부 |
 |---|---|---|
-| `OPENAI_API_KEY` | Vercel Python 함수 서버 내부 | 절대 공개 금지 |
-| `OPENAI_MODEL` | 서버 내부 모델 선택 | 선택 사항 |
+| `GEMINI_API_KEY` | Vercel Python 함수 서버 내부 | 절대 공개 금지 |
+| `GEMINI_MODEL` | 서버 내부 모델 선택 | 선택 사항 |
 | `TAX_RESET_DEMO_MODE` | 데모 결과 전용 서버 모드 | 선택 사항, `true`이면 실제 AI 호출 없음 |
 
 - 키는 로컬 `.env.local`과 Vercel Environment Variables에만 둔다. `.env.local`은 `.gitignore`에 포함한다.
@@ -61,7 +61,7 @@
 
 ### 키 노출이 의심될 때
 
-1. OpenAI API Dashboard에서 해당 키를 즉시 **삭제(폐기)** 한다.
+1. Google AI Studio 또는 Google Cloud Console에서 해당 키를 즉시 **삭제(폐기)** 한다.
 2. 새 키를 발급해 Vercel Production/Preview 변수 값을 교체한다.
 3. Vercel에서 Redeploy하고 Function Logs의 인증 오류를 확인한다.
 4. GitHub에 키가 커밋되었다면 먼저 키를 폐기한 뒤 저장소 기록과 협업자 접근 권한을 점검한다. 삭제 커밋만으로 공개된 키가 안전해지지는 않는다.
@@ -152,7 +152,7 @@ Content-Type: application/json
 | 항목 | 현재 기준 | 이유 |
 |---|---|---|
 | 학습/화면 검증 | `TAX_RESET_DEMO_MODE=true` | 실제 API 비용 없이 UX와 API 흐름을 검증한다. |
-| 기본 모델 | `OPENAI_MODEL`로 서버에서만 지정 | 모델 교체를 코드 수정 없이 관리한다. |
+| 기본 모델 | `GEMINI_MODEL`로 서버에서만 지정 | 모델 교체를 코드 수정 없이 관리한다. |
 | 호출 빈도 | 사용자가 버튼을 누른 경우에만 1회 | 자동 반복 호출을 피하고 비용을 예측한다. |
 | 지연 처리 | 프론트 15초 제한과 재시도 안내 | 중복 호출과 장시간 대기를 줄인다. |
 | 운영 전 | 사용량 한도·결제·모델 비용 확인 | 공개 배포의 과금·쿼터 위험을 줄인다. |

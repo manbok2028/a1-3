@@ -66,18 +66,34 @@ def demo_diagnosis(data: dict[str, str]) -> dict[str, object]:
     }
 
 
-def build_messages(data: dict[str, str]) -> list[dict[str, str]]:
+def build_prompt(data: dict[str, str]) -> tuple[str, str]:
     system = """당신은 대한민국 세금 체납 상황을 쉬운 말로 정리하는 정보 도우미다. 세무사·변호사가 아니며 법률·세무 자문, 정확한 가산금 계산, 신청 가능 여부 또는 처분 결과를 단정하지 않는다. 사용자에게 불필요한 개인정보를 요구하지 않는다. 제도는 '확인해 볼 수 있는 방향'으로만 말하고 관할 세무서 또는 지방자치단체 확인을 권한다. 아래 JSON 형식만 반환한다: {\"summary\":string,\"possible_options\":[string],\"next_steps\":[string],\"matching_tags\":[string]}. matching_tags는 제공된 후보 중 최대 3개만 사용한다."""
     user = json.dumps({"입력": data, "태그후보": sorted(ALLOWED_TAGS)}, ensure_ascii=False)
-    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+    return system, user
 
 
-def call_openai(data: dict[str, str]) -> dict[str, object]:
-    api_key = os.getenv("OPENAI_API_KEY")
+def call_gemini(data: dict[str, str]) -> dict[str, object]:
+    """Create a structured, safety-first information summary with Gemini."""
+
+    api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
-        raise RuntimeError("AI 기능이 아직 설정되지 않았습니다. 운영자는 Vercel 환경 변수 OPENAI_API_KEY를 설정해 주세요.")
-    request_body = json.dumps({"model": os.getenv("OPENAI_MODEL", "gpt-4o-mini"), "messages": build_messages(data), "temperature": 0.2, "response_format": {"type": "json_object"}}, ensure_ascii=False).encode("utf-8")
-    request = Request("https://api.openai.com/v1/chat/completions", data=request_body, headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}, method="POST")
+        raise RuntimeError("AI 기능이 아직 설정되지 않았습니다. 운영자는 Vercel 환경 변수 GEMINI_API_KEY를 설정해 주세요.")
+    system, user = build_prompt(data)
+    request_body = json.dumps(
+        {
+            "systemInstruction": {"parts": [{"text": system}]},
+            "contents": [{"role": "user", "parts": [{"text": user}]}],
+            "generationConfig": {"temperature": 0.2, "responseMimeType": "application/json"},
+        },
+        ensure_ascii=False,
+    ).encode("utf-8")
+    model = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
+    request = Request(
+        f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+        data=request_body,
+        headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
+        method="POST",
+    )
     try:
         with urlopen(request, timeout=12) as response:
             raw = json.loads(response.read().decode("utf-8"))
@@ -91,7 +107,7 @@ def call_openai(data: dict[str, str]) -> dict[str, object]:
         raise RuntimeError("AI 서버 연결이 지연되고 있습니다. 잠시 후 다시 시도해 주세요.") from error
 
     try:
-        content = raw["choices"][0]["message"]["content"]
+        content = raw["candidates"][0]["content"]["parts"][0]["text"]
         answer = json.loads(content)
     except (KeyError, IndexError, TypeError, json.JSONDecodeError) as error:
         raise RuntimeError("AI 응답 형식을 확인하지 못했습니다. 다시 시도해 주세요.") from error
@@ -121,7 +137,7 @@ class handler(BaseHTTPRequestHandler):
             if os.getenv("TAX_RESET_DEMO_MODE", "false").lower() == "true":
                 self._send(HTTPStatus.OK, demo_diagnosis(data))
             else:
-                self._send(HTTPStatus.OK, call_openai(data))
+                self._send(HTTPStatus.OK, call_gemini(data))
         except ValueError as error:
             self._send(HTTPStatus.BAD_REQUEST, {"error": str(error)})
         except RuntimeError as error:

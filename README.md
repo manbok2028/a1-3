@@ -31,7 +31,7 @@ Vercel 배포 전입니다. GitHub 저장소를 Vercel에 연결한 뒤 이 자�
 
 - 5개 페이지: 홈, AI 상황 정리, 제도 안내, 세무사 연결, FAQ·문의
 - 반응형 바닐라 HTML/CSS/JavaScript UI와 다크 모드 보너스 기능
-- `fetch('/api/diagnose')` → Vercel Python Serverless Function → OpenAI API → 화면 결과 렌더링
+- `fetch('/api/diagnose')` → Vercel Python Serverless Function → Gemini API → 화면 결과 렌더링
 - 필수 입력 누락, API 인증·한도 오류, 15초 지연을 사용자 메시지로 처리
 - AI 매칭 태그 기반의 가상 세무사 프로필 필터링과 상담 준비 UX
 - 실제 개인정보·실제 세무사 연락처·상담 신청 데이터는 저장하지 않음
@@ -81,8 +81,8 @@ python -m unittest discover -s tests -v
 
 | 이름 | 용도 | 필수 |
 |---|---|---|
-| `OPENAI_API_KEY` | 서버에서만 사용하는 OpenAI API 키 | 실제 AI 진단 시 필수 |
-| `OPENAI_MODEL` | 사용할 모델 이름. 기본값 `gpt-4o-mini` | 선택 |
+| `GEMINI_API_KEY` | 서버에서만 사용하는 Gemini API 키 | 실제 AI 진단 시 필수 |
+| `GEMINI_MODEL` | 사용할 Gemini 모델 이름. 기본값 `gemini-3.5-flash` | 선택 |
 | `TAX_RESET_DEMO_MODE` | `true`면 외부 호출 없는 명시적 데모 응답 | 선택 |
 
 `.env.local`은 Git에 올리지 않습니다. Vercel에서는 **Settings → Environment Variables**에 같은 이름으로 설정합니다. 브라우저 JavaScript에는 키를 절대 넣지 않습니다.
@@ -91,7 +91,7 @@ python -m unittest discover -s tests -v
 
 1. GitHub의 `manbok2028/a1-3` 저장소를 Vercel에 Import합니다.
 2. Framework Preset은 `Other`를 선택합니다.
-3. `OPENAI_API_KEY`를 Production/Preview 환경 변수로 추가합니다.
+3. `GEMINI_API_KEY`를 Production/Preview 환경 변수로 추가하고 `TAX_RESET_DEMO_MODE`는 삭제하거나 `false`로 설정합니다.
 4. Deploy 후 `/diagnosis.html`에서 정상 입력·빈 입력·오류 처리를 확인합니다.
 5. 배포 URL을 이 README와 `docs/service-plan.md`에 기록합니다.
 
@@ -108,3 +108,6 @@ python -m unittest discover -s tests -v
 ## 참고 공식 정보
 
 제도 안내는 일반 정보이며 최신 적용 요건을 보장하지 않습니다. [국세청 공식 누리집](https://www.nts.go.kr/)과 [위택스](https://www.wetax.go.kr/)에서 본인 상황을 확인하세요. 국세청은 징수유예·압류·매각유예 관련 공식 안내를 제공합니다.
+## 미션 요구사항 최종 점검
+
+제출 패키지와 코드 위치를 한눈에 확인하려면 [미션 요구사항 점검표](docs/mission-compliance.md)를 참고하세요. 실제 Gemini AI를 공개 배포에서 사용하려면 Vercel 환경 변수에 `GEMINI_API_KEY`를 등록하고 `TAX_RESET_DEMO_MODE`를 삭제하거나 `false`로 설정한 뒤 재배포해야 합니다. 실제 키는 코드, 문서, 화면 캡처, Git 커밋에 절대 포함하지 않습니다.
